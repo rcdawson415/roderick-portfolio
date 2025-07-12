@@ -37,7 +37,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-primary opacity-5"></div>
         <div className="relative max-w-7xl mx-auto text-center">
           <div className="mb-8 animate-fade-in-up">
-            <h2 className="text-5xl md:text-7xl font-display font-bold text-neutral-900 dark:text-white mb-6 leading-extra-tight">
+            <h2 className="font-display font-bold text-neutral-900 dark:text-white mb-6 leading-extra-tight">
               Welcome to My
               <span className="block text-gradient bg-gradient-to-r from-primary-600 to-secondary-600 animate-gradient-x">
                 Digital Portfolio

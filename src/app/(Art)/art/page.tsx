@@ -2,316 +2,278 @@
 import Image from "next/image";
 import { useState } from 'react';
 
-function ArtDisplay({ArtListItems, element, setShowModal}: {ArtListItems: Array<ArtObject>, element: ArtObject, setShowModal:(bool:boolean) => void}) {
-    const list = ArtListItems.map(item =>  <li className="border-solid border-2 border-sky-500 m-1"> <ArtListItem element={item} /> </li> )
+// --- Art Object Model ---
+type Comment = {
+  user: string;
+  text: string;
+  date: string;
+};
 
-    return (
-        <div className="">
-            <ul className="flex overflow-x-scroll grid-flow-col flow-wrap overflow-x-scroll auto-rows-fr">{list}</ul>
+type ArtObject = {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  image: string;
+  likes: number;
+  dislikes: number;
+  comments: Comment[];
+};
+
+// --- Navigation Bar ---
+function NavBar() {
+  return (
+    <nav className="w-full bg-white shadow flex items-center justify-between px-8 py-4 mb-8">
+      <div className="flex items-center gap-8">
+        <span className="text-2xl font-bold text-amber-600">Art Gallery</span>
+        <a href="/login" className="text-gray-700 hover:text-amber-600 font-medium transition">Login</a>
+        <a href="/" className="text-gray-700 hover:text-amber-600 font-medium transition">Home</a>
+        <a href="/codingProject" className="text-gray-700 hover:text-amber-600 font-medium transition">Coding Projects</a>
+      </div>
+    </nav>
+  );
+}
+
+// --- Art Carousel Item ---
+function ArtCarouselItem({
+  art,
+  onLike,
+  onDislike,
+  onAddComment,
+}: {
+  art: ArtObject;
+  onLike: () => void;
+  onDislike: () => void;
+  onAddComment: (comment: string) => void;
+}) {
+  const [commentInput, setCommentInput] = useState('');
+
+  return (
+    <div className="flex flex-col items-center w-full max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+      <div className="w-full flex flex-col items-center">
+        <div className="w-96 h-96 relative mb-6">
+          <Image
+            src={art.image}
+            alt={art.title}
+            fill
+            style={{ objectFit: 'cover', borderRadius: '1rem' }}
+            className="shadow"
+            sizes="384px"
+            priority
+          />
         </div>
-    )
-} 
-
-class ArtObject {
-    name: string = '';
-    id: string = '';
-    description: string = '';
-    subjectTitle: string = '';
-    skills: string = '';
-    achievements: string = '';
-    goals: string = '';
-    passion: string = '';
-    images: string = '';
-    icons: string = '';
-    associatedInstagram: string = '';
-    associatedTiktok: string = '';
-    associatedLinkedIn: string = '';
-    associatedYoutube: string = '';
-    associatedTwitch: string = '';
-
-    public constructor() {
-        this.name = '';
-        this.id = '-1';
-        this.description = '';
-        this.subjectTitle = '';
-        this.skills = '';
-        this.achievements = '';
-        this.goals = '';
-        this.passion = '';
-        this.images = '';
-        this.associatedInstagram = '';
-        this.associatedTiktok = '';
-        this.associatedLinkedIn = '';
-        this.associatedYoutube = '';
-        this.associatedTwitch = '';
-    }
-}
-
-function ArtListItem({element} : {element : ArtObject}) {
-    return (
-        <div className="">
-            <div className=" ">
-                    <div className="">
-                        <div className="">
-                        <h1>{element.subjectTitle}</h1>
-                    </div>
-                            <div className="">
-                                <label>Name</label>
-                                <h2 className="justify-center">{element.name}</h2>
-                            </div>
-                            <div className=""> <p>{element.description}</p></div>
-                            <div className=""><p>{element.goals}</p></div>
-                            <div className=""><b>{element.skills}</b></div>
-                    </div> 
-            </div>
-        </div>
-
-    )
-}
-
-function ArtCarouselItem() {
-
-}
-
-function AddItemModal ({setShowModal, setInputValue, inputValue, setArtListItems, ArtListItems} : {inputValue : string, setInputValue : (str:string) => void, setShowModal: (bool : boolean) => void, setArtListItems: (arr : Array<ArtObject>) => void, ArtListItems : Array<ArtObject>}) {
-    const ArtObj = new ArtObject();
-    const [name, setName] = useState('');
-    const [id, setId] = useState('');
-    const [description, setDescription] = useState('');
-    const [subjectTitle, setSubjectTitle] = useState('');
-    const [goals, setGoals] = useState('');
-    const [skills, setSkills] = useState('');
-    function handleSaveModal() {
-        ArtObj.name = name;
-        ArtObj.id = id;
-        ArtObj.description = description;
-        ArtObj.subjectTitle = subjectTitle;
-        ArtObj.skills = skills;
-        ArtObj.goals = goals
-        setArtListItems([...ArtListItems, ArtObj]);
-        setShowModal(false);
-    }
-    return (
-        <>
-          <div
-            className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+        <h2 className="text-3xl font-bold mb-2 text-amber-700">{art.title}</h2>
+        <p className="text-gray-600 mb-2 italic">Location: {art.location}</p>
+        <p className="text-gray-800 mb-4">{art.description}</p>
+        <div className="flex items-center gap-6 mb-4">
+          <button
+            className="flex items-center gap-1 px-3 py-1 rounded bg-amber-100 hover:bg-amber-200 transition"
+            onClick={onLike}
+            aria-label="Like"
           >
-            <div className="relative w-auto my-6 mx-auto max-w-3xl">
-              {/*content*/}
-              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                {/*header*/}
-                <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
-                  <h3 className="text-3xl font-semibold text-amber-500" >
-                    Modal Title
-                  </h3>
-                  <button
-                    className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                    onClick={()=>setShowModal(false)}
-                  >
-                    <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                      ×
-                    </span>
-                  </button>
-                </div>
-                {/*body*/}
-                <div className="relative p-6 flex-auto overflow-auto text-yellow-400">
-                  <p className="my-4  text-lg leading-relaxed">
-                    I always felt like I could do anything. That’s the main
-                    thing people are controlled by! Thoughts- their perception
-                    of themselves! They're slowed down by their perception of
-                    themselves. If you're taught you can’t do anything, you
-                    won’t do anything. I was taught I could do everything.
-                  </p>
-                  <div className="flex flex-row">
-                        <p>Attribute Name</p>
-                        <input
-                            className="w-3/6 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  
-                            type="text"
-                            id="name"
-                            onChange={(e)=>setName(e.target.value)}
-                            value={name}
-                            placeholder="John"
-                            required 
-                        />
-                         <input
-                            className="w-3/6 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  
-                            type="text"
-                            id="id"
-                            value={id}
-                            onChange={(e)=>setId(e.target.value)}
-                            placeholder="identifier"
-                            required 
-                        />
-                           <input
-                            className="w-3/6 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  
-                            type="text"
-                            id="id"
-                            value={description}
-                            onChange={(e)=>setDescription(e.target.value)}
-                            placeholder="description"
-                            required 
-                            />
-
-                            <input
-                            className="w-3/6 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  
-                            type="text"
-                            id="id"
-                            value={subjectTitle}
-                            onChange={(e)=>setSubjectTitle(e.target.value)}
-                            placeholder="description"
-                            required 
-                            />
-                                <input
-                            className="w-3/6 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  
-                            type="text"
-                            id="id"
-                            value={skills}
-                            onChange={(e)=>setSkills(e.target.value)}
-                            placeholder="description"
-                            required 
-                        />
-                         <input
-                            className="w-3/6 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  
-                            type="text"
-                            id="id"
-                            value={goals}
-                            onChange={(e)=>setGoals(e.target.value)}
-                            placeholder="description"
-                            required 
-                        />
-                        
-                        
-                        
-
-                  </div>
-                </div>
-                {/*footer*/}
-                <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
-                  <button
-                    className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                    onClick={()=> setShowModal(false)}
-                  >
-                    Close
-                  </button>
-                  <button
-                    className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                    onClick={()=>handleSaveModal()}
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </div>
+            <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3 10a7 7 0 1114 0A7 7 0 013 10zm7-5a5 5 0 100 10A5 5 0 0010 5z"/></svg>
+            <span>{art.likes}</span>
+          </button>
+          <button
+            className="flex items-center gap-1 px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 transition"
+            onClick={onDislike}
+            aria-label="Dislike"
+          >
+            <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 110-12 6 6 0 010 12z"/></svg>
+            <span>{art.dislikes}</span>
+          </button>
+        </div>
+      </div>
+      <div className="w-full mt-4">
+        <h3 className="text-lg font-semibold mb-2 text-amber-700">Comments</h3>
+        <div className="max-h-40 overflow-y-auto mb-2">
+          {art.comments.length === 0 && (
+            <p className="text-gray-400 italic">No comments yet.</p>
+          )}
+          {art.comments.map((c, idx) => (
+            <div key={idx} className="mb-2 border-b pb-1">
+              <span className="font-semibold text-gray-700">{c.user}</span>
+              <span className="text-xs text-gray-400 ml-2">{c.date}</span>
+              <div className="text-gray-800">{c.text}</div>
             </div>
-          </div>
-          <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-        </>
-    )
+          ))}
+        </div>
+        <form
+          className="flex gap-2"
+          onSubmit={e => {
+            e.preventDefault();
+            if (commentInput.trim()) {
+              onAddComment(commentInput.trim());
+              setCommentInput('');
+            }
+          }}
+        >
+          <input
+            className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+            type="text"
+            placeholder="Add a comment..."
+            value={commentInput}
+            onChange={e => setCommentInput(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600 transition"
+          >
+            Post
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
-export default function Home() {
-    const [showModal, setShowModal] = useState(false);
-    const onAddItemClicked = (doShow:boolean) => { setShowModal(doShow) };
-    const onpressMeClicked = (doShow:boolean) => { setShowModal(doShow) };
-    const [inputValue, setInputValue] = useState('input value');
-    const [element, setElement] = useState({});
-    const [ArtListItems, setArtListItems] = useState([]); 
-    const obj = { name:'firstObj', id:'firstObj', description:'this is my description of the subject', subjectTitle:'About Me subject', images:'', associatedInstagram:'', associatedTiktok:'', associatedLinkedIn:'' }
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-          <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-            Welcome to RC's about me&nbsp;
-            <code className="font-mono font-bold">01001000 01000101 01001100 01001100 01001111 </code>
-          </p>
-          <div className="bottom-0 left-0 flex w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-            <a
-              className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{" "}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className="dark:invert"
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
-        <div id="default-carousel" className="relative w-full" data-carousel="slide">
-    {/* <!-- Carousel wrapper --> */}
-    <div className="relative h-56 overflow-hidden rounded-lg md:h-96">
-         {/* <!-- Item 1 --> */}
-        <div className="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="" className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..."/>
-        </div>
-        {/* <!-- Item 2 --> */}
-        <div className="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="" className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..."/>
-        </div>
-        {/* <!-- Item 3 --> */}
-        <div className="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="" className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..."/>
-        </div>
-        {/* <!-- Item 4 --> */}
-        <div className="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="" className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..."/>
-        </div>
-        {/* <!-- Item 5 --> */}
-        <div className="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="" className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..."/>
-        </div>
+// --- Carousel Controls ---
+function CarouselControls({
+  total,
+  current,
+  onPrev,
+  onNext,
+}: {
+  total: number;
+  current: number;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-center gap-6 mt-6">
+      <button
+        onClick={onPrev}
+        className="p-2 rounded-full bg-gray-100 hover:bg-amber-100 transition"
+        aria-label="Previous"
+        disabled={total === 0}
+      >
+        <svg className="w-6 h-6 text-amber-700" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <span className="text-gray-600 font-medium">
+        {total === 0 ? '0/0' : `${current + 1} / ${total}`}
+      </span>
+      <button
+        onClick={onNext}
+        className="p-2 rounded-full bg-gray-100 hover:bg-amber-100 transition"
+        aria-label="Next"
+        disabled={total === 0}
+      >
+        <svg className="w-6 h-6 text-amber-700" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
     </div>
-    {/* <!-- Slider indicators --> */}
-    <div className="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
-        <button type="button" className="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-        <button type="button" className="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
-        <button type="button" className="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
-        <button type="button" className="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 4" data-carousel-slide-to="3"></button>
-        <button type="button" className="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 5" data-carousel-slide-to="4"></button>
-    </div>
-    {/* <!-- Slider controls --> */}
-    <button type="button" className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
-        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-            <svg className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
-            </svg>
-            <span className="sr-only">Previous</span>
-        </span>
-    </button>
-    <button type="button" className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
-        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-            <svg className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
-            </svg>
-            <span className="sr-only">Next</span>
-        </span>
-    </button>
-</div>  
-        <div className="flex flex-col m-1">
-        <ArtDisplay ArtListItems={ArtListItems} element={element} setShowModal={onpressMeClicked}>
-        </ArtDisplay>
-         {showModal ? 
-            <AddItemModal 
-                element={element} 
-                setElement={setElement}
-                inputValue={inputValue}
-                setInputValue={setInputValue}
-                setShowModal={onAddItemClicked}
-                setArtListItems={setArtListItems}
-                ArtListItems={ArtListItems}
-            >
+  );
+}
 
-            </AddItemModal> : null}
-            <button onClick={() => setShowModal(true)}> Press Me</button>
-            </div>
-      </main>
+// --- Main Page ---
+export default function ArtGalleryPage() {
+  // Example art objects
+  const [artList, setArtList] = useState<ArtObject[]>([
+    {
+      id: '1',
+      title: 'Sunset Over the Lake',
+      description: 'A beautiful sunset captured over the tranquil lake in Switzerland.',
+      location: 'Lake Geneva, Switzerland',
+      image: '/art/sunset-lake.jpg',
+      likes: 12,
+      dislikes: 1,
+      comments: [
+        { user: 'Alice', text: 'Stunning colors!', date: '2024-06-01' },
+        { user: 'Bob', text: 'Reminds me of my trip there.', date: '2024-06-02' },
+      ],
+    },
+    {
+      id: '2',
+      title: 'Urban Geometry',
+      description: 'A study of lines and shapes in modern city architecture.',
+      location: 'New York, USA',
+      image: '/art/urban-geometry.jpg',
+      likes: 8,
+      dislikes: 0,
+      comments: [],
+    },
+    {
+      id: '3',
+      title: 'Forest Path',
+      description: 'A peaceful path winding through a dense forest.',
+      location: 'Black Forest, Germany',
+      image: '/art/forest-path.jpg',
+      likes: 15,
+      dislikes: 2,
+      comments: [
+        { user: 'Charlie', text: 'So calming!', date: '2024-06-03' },
+      ],
+    },
+  ]);
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  // Carousel navigation
+  const goPrev = () => setCurrentIdx(idx => (artList.length === 0 ? 0 : (idx - 1 + artList.length) % artList.length));
+  const goNext = () => setCurrentIdx(idx => (artList.length === 0 ? 0 : (idx + 1) % artList.length));
+
+  // Like/Dislike/Comment handlers
+  const handleLike = () => {
+    setArtList(list =>
+      list.map((art, idx) =>
+        idx === currentIdx ? { ...art, likes: art.likes + 1 } : art
+      )
     );
-  }
-  
+  };
+  const handleDislike = () => {
+    setArtList(list =>
+      list.map((art, idx) =>
+        idx === currentIdx ? { ...art, dislikes: art.dislikes + 1 } : art
+      )
+    );
+  };
+  const handleAddComment = (comment: string) => {
+    setArtList(list =>
+      list.map((art, idx) =>
+        idx === currentIdx
+          ? {
+              ...art,
+              comments: [
+                ...art.comments,
+                {
+                  user: 'Guest',
+                  text: comment,
+                  date: new Date().toISOString().slice(0, 10),
+                },
+              ],
+            }
+          : art
+      )
+    );
+  };
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-amber-50 to-white flex flex-col">
+      <NavBar />
+      <section className="flex-1 flex flex-col items-center justify-center px-4">
+        {artList.length > 0 ? (
+          <>
+            <ArtCarouselItem
+              art={artList[currentIdx]}
+              onLike={handleLike}
+              onDislike={handleDislike}
+              onAddComment={handleAddComment}
+            />
+            <CarouselControls
+              total={artList.length}
+              current={currentIdx}
+              onPrev={goPrev}
+              onNext={goNext}
+            />
+          </>
+        ) : (
+          <div className="text-center text-gray-400 text-xl mt-32">
+            No art objects to display.
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
