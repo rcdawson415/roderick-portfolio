@@ -9,7 +9,7 @@
   color4: #39443b;
   color5: #fafa0c;
   color6: #08fd3d;
-  --foreground-rgb: 0, 0, 0;
+  --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 110, 154, 117;
   --background-end-rgb: 57, 68, 59;
 }
